@@ -94,15 +94,6 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 }
 
-void AMGP_2526Character::Flight(const FInputActionValue& Value)
-{
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-	
-}
-
 void AMGP_2526Character::DoMove(float Right, float Forward)
 {
 	if (GetController() != nullptr)
@@ -147,6 +138,7 @@ void AMGP_2526Character::DoJumpEnd()
 
 void AMGP_2526Character::Flight(const FInputActionValue& Value)
 {
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	FVector2D Input = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
