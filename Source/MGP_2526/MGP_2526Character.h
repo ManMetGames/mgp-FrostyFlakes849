@@ -49,6 +49,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	/* Video - Flight Input Action */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* FlightAction;
+
 public:
 
 	/** Constructor */
@@ -67,6 +71,8 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	void Flight(const FInputActionValue& Value);
+
 public:
 
 	/** Handles move inputs from either controls or UI interfaces */
@@ -84,6 +90,14 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	/* Video -  Handles Flight input from controls or UI*/
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoFlightStart();
+
+	/* Video - Handles Flight input from controls or UI*/
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoFlightEnd();
 
 public:
 

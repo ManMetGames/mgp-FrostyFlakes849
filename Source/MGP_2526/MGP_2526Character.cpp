@@ -65,6 +65,9 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		//Flight
+		EnhancedInputComponent->BindAction(FlightAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Flight);
 	}
 	else
 	{
@@ -88,6 +91,18 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+
+}
+
+void AMGP_2526Character::Flight(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// route the input
+	DoMove(MovementVector.X, MovementVector.Y);
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
