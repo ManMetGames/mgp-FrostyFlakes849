@@ -100,9 +100,7 @@ void AMGP_2526Character::Flight(const FInputActionValue& Value)
 
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	// route the input
-	DoMove(MovementVector.X, MovementVector.Y);
+	
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
@@ -145,4 +143,34 @@ void AMGP_2526Character::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void AMGP_2526Character::Flight(const FInputActionValue& Value)
+{
+	FVector2D Input = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(ForwardDirection, Input.Y);
+		AddMovementInput(RightDirection, Input.X);
+
+		// Optional: vertical movement
+		AddMovementInput(FVector::UpVector, Input.Y);
+	}
+}
+
+void AMGP_2526Character::DoFlightStart()
+{
+	Flight;
+}
+
+void AMGP_2526Character::DoFlightEnd()
+{
+	StopFly;
 }
