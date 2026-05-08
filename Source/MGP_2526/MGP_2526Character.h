@@ -71,6 +71,7 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	/* Called for Flight */
 	void Flight(const FInputActionValue& Value);
 
 public:
@@ -94,6 +95,7 @@ public:
 	/* Video -  Handles Flight input from controls or UI*/
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoFlightStart();
+
 
 	/* Video - Handles Flight input from controls or UI*/
 	UFUNCTION(BlueprintCallable, Category = "Input")

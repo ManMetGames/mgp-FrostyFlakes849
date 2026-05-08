@@ -67,7 +67,7 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
 
 		//Flight
-		EnhancedInputComponent->BindAction(FlightAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Flight);
+		EnhancedInputComponent->BindAction(FlightAction, ETriggerEvent::Started, this, &AMGP_2526Character::Flight);
 	}
 	else
 	{
@@ -159,10 +159,10 @@ void AMGP_2526Character::Flight(const FInputActionValue& Value)
 
 void AMGP_2526Character::DoFlightStart()
 {
-	Flight;
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 }
 
 void AMGP_2526Character::DoFlightEnd()
 {
-	StopFly;
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
