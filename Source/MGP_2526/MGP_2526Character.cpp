@@ -169,6 +169,8 @@ void AMGP_2526Character::Flight(const FInputActionValue& Value)
 		// Optional: vertical movement
 		AddMovementInput(FVector::UpVector, Input.Y);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Flight key pressed"));
 }
 
 void AMGP_2526Character::DoFlightStart()
