@@ -49,6 +49,23 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	/* Video - Flight Input Action */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* FlightAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* VerticalAction;
+
+	UPROPERTY(EditAnywhere, Category = "Flight")
+	float MaxFlightTime = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Flight")
+	float FlightCooldown = 5.0f;
+
+	float FlightTimer = 0.0f;
+	float CooldownTimer = 0.0f;
+	bool bIsOnCooldown = false;
+
 public:
 
 	/** Constructor */
@@ -67,6 +84,13 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	/* Called for Flight */
+	void Flight(const FInputActionValue& Value);
+
+	bool bIsFlying = false;
+
+	void Vertical(const FInputActionValue& Value);
+
 public:
 
 	/** Handles move inputs from either controls or UI interfaces */
@@ -84,6 +108,17 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	/* Video -  Handles Flight input from controls or UI*/
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoFlightStart();
+
+
+	/* Video - Handles Flight input from controls or UI*/
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoFlightEnd();
+
+	virtual void Tick(float DeltaTime) override;
 
 public:
 

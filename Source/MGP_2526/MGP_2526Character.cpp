@@ -48,6 +48,9 @@ AMGP_2526Character::AMGP_2526Character()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -65,6 +68,11 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		//Flight
+		EnhancedInputComponent->BindAction(FlightAction, ETriggerEvent::Started, this, &AMGP_2526Character::Flight);
+
+		EnhancedInputComponent->BindAction(VerticalAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Vertical);
 	}
 	else
 	{
@@ -88,6 +96,7 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
@@ -108,6 +117,7 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 		AddMovementInput(ForwardDirection, Forward);
 		AddMovementInput(RightDirection, Right);
 	}
+
 }
 
 void AMGP_2526Character::DoLook(float Yaw, float Pitch)
@@ -131,3 +141,105 @@ void AMGP_2526Character::DoJumpEnd()
 	// signal the character to stop jumping
 	StopJumping();
 }
+
+void AMGP_2526Character::Flight(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	FVector2D Input = Value.Get<FVector2D>();
+
+	bIsFlying = !bIsFlying; /* Note: Help from AI */
+
+	if (bIsFlying)
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		GetCharacterMovement()->GravityScale = 0.f;
+		FlightTimer = MaxFlightTime; // reset timer on activation
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		GetCharacterMovement()->GravityScale = 1.f;
+	}
+
+	if (Controller != nullptr)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(ForwardDirection, Input.Y);
+		AddMovementInput(RightDirection, Input.X);
+
+		// Optional: vertical movement
+		AddMovementInput(FVector::UpVector, Input.Y);
+	}
+
+	GetCharacterMovement()->BrakingDecelerationFlying = 500.f;
+
+	UE_LOG(LogTemp, Warning, TEXT("Flight key pressed"));
+}
+
+void AMGP_2526Character::DoFlightStart()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+}
+
+void AMGP_2526Character::DoFlightEnd()
+{
+	bIsFlying = false;
+	bIsOnCooldown = true;
+	CooldownTimer = FlightCooldown;
+
+	GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+	GetCharacterMovement()->GravityScale = 1.f;
+}
+
+void AMGP_2526Character::Vertical(const FInputActionValue &Value)
+{
+	float Axis = Value.Get<float>();
+
+	UE_LOG(LogTemp, Warning, TEXT("Vertical called: Axis=%.2f, IsFlying=%d, Mode=%d"),
+		Axis,
+		bIsFlying,
+		(int32)GetCharacterMovement()->MovementMode);
+
+	if (GetCharacterMovement()->MovementMode == MOVE_Flying)
+	{
+		AddMovementInput(FVector::UpVector, Axis * 2.0f);
+	}
+
+}
+
+void AMGP_2526Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsFlying)
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+
+		FlightTimer -= DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("Flight time remaining: %.1f"), FlightTimer);
+
+		if (FlightTimer <= 0.f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Flight ended"));
+			DoFlightEnd();
+		}
+	}
+
+	if (bIsOnCooldown)
+	{
+		CooldownTimer -= DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("Cooldown remaining: %.1f"), CooldownTimer);
+
+		if (CooldownTimer <= 0.f)
+		{
+			bIsOnCooldown = false;
+			UE_LOG(LogTemp, Warning, TEXT("Cooldown finished"));
+		}
+	}
+}
+
