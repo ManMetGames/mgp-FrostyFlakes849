@@ -48,6 +48,9 @@ AMGP_2526Character::AMGP_2526Character()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -191,8 +194,24 @@ void AMGP_2526Character::Vertical(const FInputActionValue &Value)
 {
 	float Axis = Value.Get<float>();
 
+	UE_LOG(LogTemp, Warning, TEXT("Vertical called: Axis=%.2f, IsFlying=%d, Mode=%d"),
+		Axis,
+		bIsFlying,
+		(int32)GetCharacterMovement()->MovementMode);
+
 	if (GetCharacterMovement()->MovementMode == MOVE_Flying)
 	{
-		AddMovementInput(FVector::UpVector, Axis);
+		AddMovementInput(FVector::UpVector, Axis * 2.0f);
+	}
+
+}
+
+void AMGP_2526Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsFlying)
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	}
 }

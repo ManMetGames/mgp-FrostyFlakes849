@@ -53,7 +53,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* FlightAction;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* VerticalAction;
 
 public:
@@ -107,6 +107,8 @@ public:
 	/* Video - Handles Flight input from controls or UI*/
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoFlightEnd();
+
+	virtual void Tick(float DeltaTime) override;
 
 public:
 
