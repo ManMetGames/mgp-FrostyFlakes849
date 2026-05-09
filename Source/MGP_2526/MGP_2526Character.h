@@ -74,6 +74,8 @@ protected:
 	/* Called for Flight */
 	void Flight(const FInputActionValue& Value);
 
+	bool bIsFlying = false;
+
 public:
 
 	/** Handles move inputs from either controls or UI interfaces */

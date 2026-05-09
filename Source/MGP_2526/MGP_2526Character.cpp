@@ -113,10 +113,6 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 		AddMovementInput(RightDirection, Right);
 	}
 
-	if (GetCharacterMovement()->MovementMode == MOVE_Flying)
-	{
-		AddMovementInput(FVector::UpVector, 0.5f); // constant lift
-	}
 }
 
 void AMGP_2526Character::DoLook(float Yaw, float Pitch)
@@ -146,13 +142,17 @@ void AMGP_2526Character::Flight(const FInputActionValue& Value)
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	FVector2D Input = Value.Get<FVector2D>();
 
-	if (GetCharacterMovement()->MovementMode == MOVE_Flying)
+	bIsFlying = !bIsFlying; /* Note: Help from AI */
+
+	if (bIsFlying)
 	{
-		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		GetCharacterMovement()->GravityScale = 0.f;
 	}
 	else
 	{
-		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+		GetCharacterMovement()->GravityScale = 1.f;
 	}
 
 	if (Controller != nullptr)
