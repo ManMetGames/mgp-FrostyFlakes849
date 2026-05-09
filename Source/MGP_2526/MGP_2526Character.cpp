@@ -153,6 +153,7 @@ void AMGP_2526Character::Flight(const FInputActionValue& Value)
 	{
 		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 		GetCharacterMovement()->GravityScale = 0.f;
+		FlightTimer = MaxFlightTime; // reset timer on activation
 	}
 	else
 	{
@@ -187,7 +188,12 @@ void AMGP_2526Character::DoFlightStart()
 
 void AMGP_2526Character::DoFlightEnd()
 {
-	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	bIsFlying = false;
+	bIsOnCooldown = true;
+	CooldownTimer = FlightCooldown;
+
+	GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+	GetCharacterMovement()->GravityScale = 1.f;
 }
 
 void AMGP_2526Character::Vertical(const FInputActionValue &Value)
@@ -213,5 +219,27 @@ void AMGP_2526Character::Tick(float DeltaTime)
 	if (bIsFlying)
 	{
 		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+
+		FlightTimer -= DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("Flight time remaining: %.1f"), FlightTimer);
+
+		if (FlightTimer <= 0.f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Flight ended"));
+			DoFlightEnd();
+		}
+	}
+
+	if (bIsOnCooldown)
+	{
+		CooldownTimer -= DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("Cooldown remaining: %.1f"), CooldownTimer);
+
+		if (CooldownTimer <= 0.f)
+		{
+			bIsOnCooldown = false;
+			UE_LOG(LogTemp, Warning, TEXT("Cooldown finished"));
+		}
 	}
 }
+

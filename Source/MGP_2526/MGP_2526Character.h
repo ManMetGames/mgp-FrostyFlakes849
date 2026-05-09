@@ -56,6 +56,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* VerticalAction;
 
+	UPROPERTY(EditAnywhere, Category = "Flight")
+	float MaxFlightTime = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Flight")
+	float FlightCooldown = 5.0f;
+
+	float FlightTimer = 0.0f;
+	float CooldownTimer = 0.0f;
+	bool bIsOnCooldown = false;
+
 public:
 
 	/** Constructor */
