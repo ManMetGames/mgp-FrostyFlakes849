@@ -68,6 +68,8 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Flight
 		EnhancedInputComponent->BindAction(FlightAction, ETriggerEvent::Started, this, &AMGP_2526Character::Flight);
+
+		EnhancedInputComponent->BindAction(VerticalAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Vertical);
 	}
 	else
 	{
@@ -170,6 +172,8 @@ void AMGP_2526Character::Flight(const FInputActionValue& Value)
 		AddMovementInput(FVector::UpVector, Input.Y);
 	}
 
+	GetCharacterMovement()->BrakingDecelerationFlying = 500.f;
+
 	UE_LOG(LogTemp, Warning, TEXT("Flight key pressed"));
 }
 
@@ -181,4 +185,14 @@ void AMGP_2526Character::DoFlightStart()
 void AMGP_2526Character::DoFlightEnd()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
+
+void AMGP_2526Character::Vertical(const FInputActionValue &Value)
+{
+	float Axis = Value.Get<float>();
+
+	if (GetCharacterMovement()->MovementMode == MOVE_Flying)
+	{
+		AddMovementInput(FVector::UpVector, Axis);
+	}
 }

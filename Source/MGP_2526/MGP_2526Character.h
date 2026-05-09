@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* FlightAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* VerticalAction;
+
 public:
 
 	/** Constructor */
@@ -75,6 +78,8 @@ protected:
 	void Flight(const FInputActionValue& Value);
 
 	bool bIsFlying = false;
+
+	void Vertical(const FInputActionValue& Value);
 
 public:
 
